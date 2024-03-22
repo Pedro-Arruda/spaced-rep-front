@@ -40,7 +40,7 @@ export const TalkWithIA = () => {
     <>
       <Header />
       <Container classname="flex flex-col justify-between h-[85vh]">
-        <div className="my-6 flex flex-wrap gap-7 text-lg">
+        <div className="my-6 flex flex-wrap gap-5 text-lg">
           {defaultTopics.map((topic) => (
             <TalkingTopic
               topic={topic}

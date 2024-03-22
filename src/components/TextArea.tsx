@@ -25,7 +25,10 @@ export const TextArea = ({
 }: TextAreaProps) => {
   return (
     <div className={"w-full bg-transparent"}>
-      <label htmlFor={name} className="block text-lg font-medium mb-1 text-neutral-400">
+      <label
+        htmlFor={name}
+        className="block text-lg font-medium mb-1 text-neutral-400"
+      >
         {label}
       </label>
       <textarea
@@ -34,7 +37,7 @@ export const TextArea = ({
         value={value}
         onChange={(e) => onChange && onChange(e.target.value, e)}
         className={classNames(
-          "border-[3px] text-lg w-full px-3 py-1.5 border-neutral-700 bg-transparent rounded-md outline-0 max-h-40 min-h-[170px] h-[40px] resize-y text-neutral-300",
+          "border-[3px] text-lg w-full px-3 py-1.5 border-neutral-700 bg-transparent rounded-md outline-0 max-h-40 min-h-[130px] h-[30px] resize-y text-neutral-300",
 
           !!error ? "border border-red-600" : "",
           className

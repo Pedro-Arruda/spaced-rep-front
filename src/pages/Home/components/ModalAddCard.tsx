@@ -21,7 +21,7 @@ export const ModalAddCard = ({
     <Modal
       onClose={() => setIsOpenModal(false)}
       header={
-        <div className="flex justify-between">
+        <div className="flex flex-wrap gap-3  justify-between">
           <p>
             <X
               size={24}
@@ -30,7 +30,10 @@ export const ModalAddCard = ({
             />
           </p>
           <p className="text-xl font-semibold">Add card</p>
-          <Button onClick={() => handleSubmit()}>
+          <Button
+            onClick={() => handleSubmit()}
+            className="w-full sm:max-w-max"
+          >
             Confirm
             <Check size={22} weight="bold" />
           </Button>
