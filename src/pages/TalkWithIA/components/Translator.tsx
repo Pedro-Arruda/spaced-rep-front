@@ -1,8 +1,11 @@
 import { Swap } from "phosphor-react";
 import { fetchApi } from "../../../functions/fetchApi";
 import { useEffect, useState } from "react";
+import { useAuth } from "../../../contexts/auth";
 
 export const Translator = () => {
+  const { auth, updateAuth } = useAuth();
+
   const [fields, setFields] = useState({
     originalText: "",
     translatedText: "",
@@ -16,6 +19,8 @@ export const Translator = () => {
         const response = fetchApi(
           "/translation",
           { text: fields.originalText, language: fields.translatedLanguage },
+          auth!,
+          updateAuth,
           "POST",
           "application/json"
         );
@@ -28,7 +33,7 @@ export const Translator = () => {
   }, [fields.originalText, 500]);
 
   return (
-    <div className="flex flex-col justify-center items-center gap-3 bg-neutral-900 h-max pt-2 pb-5 px-5 rounded-md border-[1px] border-neutral-700">
+    <div className="lg:flex flex-col justify-center hidden items-center gap-3 bg-neutral-900 h-max pt-2 pb-5 px-5 rounded-md border-[1px] border-neutral-700">
       <p className="text-lg">Translator</p>
       <div className="flex flex-col gap-3">
         <div className="flex flex-col gap-3">

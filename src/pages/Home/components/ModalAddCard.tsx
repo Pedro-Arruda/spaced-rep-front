@@ -17,6 +17,8 @@ export const ModalAddCard = ({
   setIsOpenModal,
   setFields,
 }: IModalAddCard) => {
+  console.log(fields.anexo);
+
   return (
     <Modal
       onClose={() => setIsOpenModal(false)}
@@ -61,7 +63,8 @@ export const ModalAddCard = ({
             htmlFor="file"
             className="px-3 text-lg cursor-pointer rounded-md flex justify-center items-center text-center gap-2 btn-secondary py-2"
           >
-            Add image
+            {fields.anexo ? fields.anexo[0].name : "Add image"}
+
             <input
               type="file"
               name="file"

@@ -3,13 +3,30 @@ import { Route, Routes } from "react-router";
 import { Home } from "./pages/Home";
 import { Study } from "./pages/Study";
 import { TalkWithIA } from "./pages/TalkWithIA";
+import { SignIn } from "./pages/Login/SignIn";
+import { SignUp } from "./pages/Login/SignUp";
+import { useAuth } from "./contexts/auth";
 
 export const Router = () => {
-  const routes = [
+  const { auth } = useAuth();
+
+  const nonProtectedRoutes = [
+    {
+      path: "/",
+      component: SignIn,
+    },
+    {
+      path: "/sign-up",
+      component: SignUp,
+    },
+  ];
+
+  const protectedRoutes = [
     {
       path: "/",
       component: Home,
     },
+
     {
       path: "/study",
       component: Study,
@@ -19,6 +36,8 @@ export const Router = () => {
       component: TalkWithIA,
     },
   ];
+
+  const routes = auth ? protectedRoutes : nonProtectedRoutes;
 
   return (
     <BrowserRouter>

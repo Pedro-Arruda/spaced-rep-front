@@ -7,6 +7,7 @@ import { Container } from "../../components/Container";
 import { useFetchGet } from "../../hook/useFetchGet";
 import { fetchApi } from "../../functions/fetchApi";
 import { successToast } from "../../components/Toast";
+import { useAuth } from "../../contexts/auth";
 
 interface IFields {
   front: string;
@@ -17,12 +18,16 @@ interface IFields {
 }
 
 export const Home = () => {
+  const { auth, updateAuth } = useAuth();
+
   const [isOpenModal, setIsOpenModal] = useState(false);
 
   const { items: cards, refetch } = useFetchGet<ICard>("/cards");
-  const cardsToStudy = cards.filter(
-    (card) => Number(card.studyAt) < Date.now()
-  );
+  let cardsToStudy = cards;
+
+  if (cards && cards.length > 0) {
+    cards.filter((card) => Number(card.studyAt) < Date.now());
+  }
 
   const [fields, setFields] = useState<IFields>({
     front: "",
@@ -37,21 +42,23 @@ export const Home = () => {
       const formData = new FormData();
       formData.append("front", fields.back);
       formData.append("back", fields.front);
+      formData.append("user_id", String(auth?.user.user_id));
 
       if (fields.anexo && fields.anexo.length > 0)
         formData.append("anexo", fields.anexo[0]);
-      await fetchApi("/cards", formData, "POST");
+      await fetchApi("/cards", formData, auth!, updateAuth, "POST");
     }
 
     const formData = new FormData();
     formData.append("front", fields.front);
     formData.append("back", fields.back);
+    formData.append("user_id", String(auth?.user.user_id));
     formData.append("dinamic_examples", String(fields.dinamic_examples));
 
     if (fields.anexo && fields.anexo.length > 0)
       formData.append("anexo", fields.anexo[0]);
 
-    await fetchApi("/cards", formData, "POST");
+    await fetchApi("/cards", formData, auth!, updateAuth, "POST");
 
     setFields({
       front: "",

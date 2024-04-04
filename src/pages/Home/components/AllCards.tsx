@@ -2,7 +2,7 @@ import { List } from "phosphor-react";
 import { Card } from "./Card";
 
 interface IAllCards {
-  cards: ICard[]
+  cards: ICard[];
 }
 
 export const AllCards = ({ cards }: IAllCards) => {
@@ -13,10 +13,10 @@ export const AllCards = ({ cards }: IAllCards) => {
         All cards ( {cards.length} )
       </div>
 
-      {cards.sort((a, b) => a.studyAt > b.studyAt ? 0 : -1).map(card => (
-        <Card card={card} key={card.studyAt} />
-      ))}
-
+      {cards.length > 0 &&
+        cards
+          .sort((a, b) => (a.studyAt > b.studyAt ? 0 : -1))
+          .map((card) => <Card card={card} key={card.studyAt} />)}
     </div>
   );
-}
+};

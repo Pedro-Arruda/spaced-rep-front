@@ -11,8 +11,10 @@ import { useLocation } from "react-router";
 import { getChatGPTResponse } from "../../functions/getChatGPTResponse";
 import { CurrentCard } from "./CurrentCard";
 import { handleSpeak } from "../../functions/handleSpeak";
+import { useAuth } from "../../contexts/auth";
 
 export const Study = () => {
+  const { auth, updateAuth } = useAuth();
   const { state } = useLocation();
   const [cardsToStudy, setCardsToStudy] = useState<any[]>(state.cardsToStudy);
   const [barPercent, setBarPercent] = useState(40);
@@ -39,7 +41,7 @@ export const Study = () => {
       body["level_difficulty_id"] = currentCard["level_difficulty_id"] + level;
     }
 
-    fetchApi(url, body, "PATCH", "application/json");
+    fetchApi(url, body, auth!, updateAuth, "PATCH", "application/json");
 
     setCardSide("front");
     setCurrentCardIndex(currentCardIndex + 1);

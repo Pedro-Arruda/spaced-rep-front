@@ -1,12 +1,15 @@
 import { errorToast } from "../components/Toast";
+import { IAuth } from "../contexts/auth";
 
 interface FetchApiResult<T> {
-  data: T[];
+  data: T;
 }
 
 export const fetchApi = async <T>(
   endpoint: string,
   body: any,
+  auth: IAuth,
+  updateAuth: (auth: IAuth | null) => void,
   method: "POST" | "PATCH" | "PUT" | "DELETE" = "POST",
   contentType?: "application/json"
 ): Promise<FetchApiResult<T>> => {
@@ -25,19 +28,45 @@ export const fetchApi = async <T>(
     body,
   };
 
-  try {
-    const response = await fetch(url, options);
+  let refreshToken = auth ? auth.refreshToken : null;
 
-    if (!response.ok) {
-      throw new Error(`Request failed with status ${response.status}`);
+  const response = await fetch(url, options);
+
+  if (!response.ok) {
+    const error = await response.json();
+    errorToast(error.message);
+  }
+
+  if (response.status == 401) {
+    const tokenURL = new URL(`${url}/token`);
+
+    const refreshResponse = await fetch(tokenURL.toString(), {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        refreshToken,
+      }),
+    });
+
+    if (refreshResponse.status == 401) {
+      updateAuth(null);
     }
 
-    const data = await response.json();
+    const refreshTokenData = await refreshResponse.json();
 
-    return { data };
-  } catch (err) {
-    console.error(err);
-    errorToast("Erro interno do servidor");
-    throw err;
+    updateAuth({
+      refreshToken: auth!.refreshToken,
+      user: auth!.user,
+      accessToken: refreshTokenData.accessToken,
+    });
+
+    return fetchApi(endpoint, body, auth, updateAuth, method, contentType);
   }
+
+  const data = await response.json();
+
+  return { data };
 };

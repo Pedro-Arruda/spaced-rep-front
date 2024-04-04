@@ -3,12 +3,15 @@ import "./utils/global.scss";
 import { Router } from "./routes";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { AuthContextProvider } from "./contexts/auth";
 
 function App() {
   return (
     <>
-      <ToastContainer />
-      <Router />
+      <AuthContextProvider>
+        <ToastContainer />
+        <Router />
+      </AuthContextProvider>
     </>
   );
 }

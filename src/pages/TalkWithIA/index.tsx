@@ -40,7 +40,7 @@ export const TalkWithIA = () => {
     <>
       <Header />
       <Container classname="flex flex-col justify-between h-[85vh]">
-        <div className="my-6 flex flex-wrap gap-5 text-lg">
+        <div className="my-6 md:flex flex-wrap gap-5 text-lg hidden">
           {defaultTopics.map((topic) => (
             <TalkingTopic
               topic={topic}
@@ -49,7 +49,7 @@ export const TalkWithIA = () => {
           ))}
         </div>
 
-        <div className="flex-1 flex relative justify-between gap-10  mt-3 py-3 px-5 overflow-y-auto">
+        <div className="flex-1 flex relative justify-between gap-10  mt-3 py-3 overflow-y-auto">
           <div className="flex flex-col gap-5">
             {messages.map(({ content, role, isLoading }, i) => (
               <ChatMessage
@@ -64,7 +64,7 @@ export const TalkWithIA = () => {
           <Translator />
         </div>
 
-        <div className="flex mt-3 w-4/6">
+        <div className="flex mt-3 lg:w-4/6">
           <input
             placeholder="Type your answer..."
             className="rounded-md py-3 px-5 w-full outline-none bg-neutral-800"
