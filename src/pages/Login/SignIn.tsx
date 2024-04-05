@@ -39,9 +39,9 @@ export const SignIn = () => {
   };
 
   return (
-    <Container classname="flex justify-center h-screen items-center ">
-      <div className="bg-neutral-800 py-8 px-10 rounded-md">
-        <div className="flex justify-center">
+    <Container classname="flex justify-center h-screen items-center">
+      <div className="bg-neutral-800 py-8 px-8 rounded-md ">
+        <div className="flex justify-center ">
           <img src={logoApp} width={250} />
         </div>
         <h1 className="text-3xl text-center mb-6">Login</h1>
@@ -51,14 +51,14 @@ export const SignIn = () => {
             placeholder="E-mail"
             value={fields.email}
             onChange={(e) => setFields({ ...fields, email: e.target.value })}
-            className="w-[450px] mb-3 py-2 px-5 rounded-md text-lg outline-none"
+            className="w-full md:min-w-[500px] mb-3 py-2 px-5 rounded-md text-lg outline-none"
           />
           <input
             type="password"
             placeholder="Password"
             value={fields.password}
             onChange={(e) => setFields({ ...fields, password: e.target.value })}
-            className="w-[450px]  mb-3 py-2 px-5 rounded-md text-lg outline-none"
+            className="w-full md:min-w-[500px]  mb-3 py-2 px-5 rounded-md text-lg outline-none"
           />
         </div>
         <div className="flex flex-col items-center gap-3 mt-8">

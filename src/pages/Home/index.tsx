@@ -23,7 +23,6 @@ export const Home = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
 
   const { items: cards, refetch } = useFetchGet<ICard>("/cards");
-  let cardsToStudy = cards;
 
   if (cards && cards.length > 0) {
     cards.filter((card) => Number(card.studyAt) < Date.now());
@@ -87,7 +86,7 @@ export const Home = () => {
 
       <Container>
         <CardToStudy
-          cardsToStudy={cardsToStudy}
+          cardsToStudy={cards.filter((card) => +card.studyAt < Date.now())}
           setIsOpenModal={setIsOpenModal}
         />
 
