@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { ModalAddCard } from "./components/ModalAddCard";
 import { Header } from "../../components/Header";
-import { CardToStudy } from "./components/CardsToStudy";
-import { AllCards } from "./components/AllCards";
+// import { CardToStudy } from "./components/CardsToStudy";
+// import { AllCards } from "./components/AllCards";
 import { Container } from "../../components/Container";
-import { useFetchGet } from "../../hook/useFetchGet";
+// import { useFetchGet } from "../../hook/useFetchGet";
 import { fetchApi } from "../../functions/fetchApi";
 import { successToast } from "../../components/Toast";
 import { useAuth } from "../../contexts/auth";
@@ -22,12 +22,12 @@ export const Home = () => {
 
   const [isOpenModal, setIsOpenModal] = useState(false);
 
-  const { items: cards, refetch } = useFetchGet<ICard>("/cards");
-  let cardsToStudy = cards;
+  // const { items: cards, refetch } = useFetchGet<ICard>("/cards");
+  // let cardsToStudy = cards;
 
-  if (cards && cards.length > 0) {
-    cards.filter((card) => Number(card.studyAt) < Date.now());
-  }
+  // if (cards && cards.length > 0) {
+  //   cards.filter((card) => Number(card.studyAt) < Date.now());
+  // }
 
   const [fields, setFields] = useState<IFields>({
     front: "",
@@ -69,7 +69,7 @@ export const Home = () => {
     });
     successToast("Card added successfully!");
 
-    refetch();
+    // refetch();
   };
 
   return (
@@ -86,12 +86,13 @@ export const Home = () => {
       <Header />
 
       <Container>
-        <CardToStudy
+        <p>sad</p>
+        {/* <CardToStudy
           cardsToStudy={cardsToStudy}
           setIsOpenModal={setIsOpenModal}
-        />
+        /> */}
 
-        <AllCards cards={cards} />
+        {/* <AllCards cards={cards} /> */}
       </Container>
     </>
   );
