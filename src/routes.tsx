@@ -38,7 +38,9 @@ export const Router = () => {
   ];
 
   const routes =
-    auth && auth.user.user_id ? protectedRoutes : nonProtectedRoutes;
+    auth && auth.user && auth.user.user_id
+      ? protectedRoutes
+      : nonProtectedRoutes;
 
   return (
     <BrowserRouter>
