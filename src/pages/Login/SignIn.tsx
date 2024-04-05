@@ -3,8 +3,7 @@ import logoApp from "../../assets/SpacedRep.png";
 import { Button } from "../../components/Button";
 import { useNavigate } from "react-router";
 import { useState } from "react";
-import { fetchApi } from "../../functions/fetchApi";
-import { IAuth, useAuth } from "../../contexts/auth";
+import { useAuth } from "../../contexts/auth";
 
 interface IFields {
   email: string;
@@ -12,7 +11,7 @@ interface IFields {
 }
 
 export const SignIn = () => {
-  const { auth, updateAuth } = useAuth();
+  const { updateAuth } = useAuth();
   const [fields, setFields] = useState<IFields>({ email: "", password: "" });
   const signInUrl = new URL(`sign-in`, import.meta.env.APP_API_URL);
 
