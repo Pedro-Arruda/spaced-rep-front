@@ -46,7 +46,7 @@ export const SignUp = () => {
       console.log(response);
     }
 
-    navigate("/");
+    // navigate("/");
   };
 
   return (

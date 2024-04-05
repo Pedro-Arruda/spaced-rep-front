@@ -4,6 +4,7 @@ import { Button } from "../../components/Button";
 import { useNavigate } from "react-router";
 import { useState } from "react";
 import { useAuth } from "../../contexts/auth";
+import { errorToast } from "../../components/Toast";
 
 interface IFields {
   email: string;
@@ -30,9 +31,10 @@ export const SignIn = () => {
     });
 
     const data = await response.json();
-
-    if (data) {
+    if (response.ok) {
       updateAuth(data);
+    } else {
+      errorToast(data.message);
     }
   };
 
