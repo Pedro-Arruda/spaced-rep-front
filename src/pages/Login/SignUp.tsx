@@ -5,7 +5,7 @@ import { useState } from "react";
 import { fetchApi } from "../../functions/fetchApi";
 import { useNavigate } from "react-router";
 import { useAuth } from "../../contexts/auth";
-import { errorToast, successToast } from "../../components/Toast";
+import { successToast } from "../../components/Toast";
 
 interface IFields {
   email: string;
@@ -37,16 +37,10 @@ export const SignUp = () => {
       "application/json"
     );
 
-    console.log("response", response);
-
     if (response.data) {
       successToast("User created!");
-    } else {
-      errorToast("asdsa");
-      console.log(response);
+      navigate("/");
     }
-
-    // navigate("/");
   };
 
   return (
