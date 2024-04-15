@@ -102,3 +102,8 @@
 .toggle-switch.checked .switch {
   transform: translateX(30px);
 }
+
+input {
+  background-color: #3b3b3b;
+  color: #c3c3c3;
+}
