@@ -8,6 +8,7 @@ import { fetchApi } from "../../functions/fetchApi";
 import { successToast } from "../../components/Toast";
 import { useAuth } from "../../contexts/auth";
 import { useFetchGet } from "../../hook/useFetchGet";
+import { ModalEditCard } from "./components/ModalEditCard";
 
 interface IFields {
   front: string;
@@ -20,9 +21,12 @@ interface IFields {
 export const Home = () => {
   const { auth, updateAuth } = useAuth();
 
-  const [isOpenModal, setIsOpenModal] = useState(false);
+  const [isOpenAddModal, setIsOpenAddModal] = useState(false);
+  const [isOpenEditModal, setIsOpenEditModal] = useState(false);
+  const [cardId, setCardId] = useState<ICard["card_id"]>();
 
-  const { items: cards, refetch } = useFetchGet<ICard>("/cards");
+  let { items: cards, refetch } = useFetchGet<ICard[]>("/cards");
+  if (!cards) cards = [];
 
   if (cards && cards.length > 0) {
     cards.filter((card) => Number(card.studyAt) < Date.now());
@@ -45,7 +49,8 @@ export const Home = () => {
 
       if (fields.anexo && fields.anexo.length > 0)
         formData.append("anexo", fields.anexo[0]);
-      await fetchApi("/cards", formData, auth!, updateAuth, "POST");
+
+      await fetchApi("/cards", formData, auth!, updateAuth);
     }
 
     const formData = new FormData();
@@ -57,7 +62,7 @@ export const Home = () => {
     if (fields.anexo && fields.anexo.length > 0)
       formData.append("anexo", fields.anexo[0]);
 
-    await fetchApi("/cards", formData, auth!, updateAuth, "POST");
+    await fetchApi("/cards", formData, auth!, updateAuth);
 
     setFields({
       front: "",
@@ -66,19 +71,39 @@ export const Home = () => {
       isReversed: fields.isReversed,
       dinamic_examples: fields.dinamic_examples,
     });
+
     successToast("Card added successfully!");
 
     refetch();
   };
 
+  const handleEdit = (cardId: ICard["card_id"]) => {
+    setIsOpenEditModal(true);
+    setCardId(cardId);
+  };
+
+  const handleDelete = (cardId: ICard["card_id"]) => {
+    console.log(cardId);
+  };
+
   return (
     <>
-      {isOpenModal && (
+      {isOpenAddModal && (
         <ModalAddCard
           fields={fields}
           setFields={setFields}
           handleSubmit={handleSubmit}
-          setIsOpenModal={setIsOpenModal}
+          setIsOpenModal={setIsOpenAddModal}
+        />
+      )}
+
+      {isOpenEditModal && (
+        <ModalEditCard
+          fields={fields}
+          setFields={setFields}
+          handleSubmit={handleSubmit}
+          setIsOpenModal={setIsOpenEditModal}
+          cardId={cardId}
         />
       )}
 
@@ -87,10 +112,10 @@ export const Home = () => {
       <Container>
         <CardToStudy
           cardsToStudy={cards.filter((card) => +card.studyAt < Date.now())}
-          setIsOpenModal={setIsOpenModal}
+          setIsOpenModal={setIsOpenAddModal}
         />
 
-        <AllCards cards={cards} />
+        <AllCards cards={cards} onEdit={handleEdit} onDelete={handleDelete} />
       </Container>
     </>
   );

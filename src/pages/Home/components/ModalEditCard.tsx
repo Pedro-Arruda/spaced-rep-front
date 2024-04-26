@@ -1,25 +1,62 @@
-import { Check, Plus, Swap, TextAa, X } from "phosphor-react";
+import { Check, Plus, TextAa, X } from "phosphor-react";
 import { Modal } from "../../../components/Modal";
 import { Button } from "../../../components/Button";
 import { TextArea } from "../../../components/TextArea";
 import ToggleSwitch from "../../../components/Toggle";
+import { useFetchGet } from "../../../hook/useFetchGet";
+import { useEffect, useState } from "react";
 
 interface IModalAddCard {
   fields: any;
+  cardId: ICard["card_id"];
   setFields: (fields: any) => void;
   setIsOpenModal: (isOpen: boolean) => void;
   handleSubmit: () => void;
 }
 
-export const ModalAddCard = ({
+export const ModalEditCard = ({
   fields,
   handleSubmit,
   setIsOpenModal,
   setFields,
+  cardId,
 }: IModalAddCard) => {
+  const { items: card } = useFetchGet<ICard>(`/cards/${cardId}`);
+
+  useEffect(() => {
+    if (card) {
+      setFields({
+        front: card.front,
+        back: card.back,
+        dinamic_examples: card.dinamic_examples,
+      });
+    }
+  }, [card]);
+
+  useEffect(() => {
+    document.addEventListener("click", () => {
+      setFields({
+        front: "",
+        back: "",
+        anexo: null,
+        isReversed: false,
+        dinamic_examples: false,
+      });
+    });
+  }, []);
+
   return (
     <Modal
-      onClose={() => setIsOpenModal(false)}
+      onClose={() => {
+        setFields({
+          front: "",
+          back: "",
+          anexo: null,
+          isReversed: false,
+          dinamic_examples: false,
+        });
+        setIsOpenModal(false);
+      }}
       header={
         <div className="flex flex-wrap gap-3  justify-between">
           <p>
@@ -29,7 +66,7 @@ export const ModalAddCard = ({
               className="cursor-pointer"
             />
           </p>
-          <p className="text-xl font-semibold">Add card</p>
+          <p className="text-xl font-semibold">Edit card</p>
           <Button
             onClick={() => handleSubmit()}
             className="w-full sm:max-w-max"
@@ -75,19 +112,6 @@ export const ModalAddCard = ({
         </div>
 
         <div className="mt-5 font-semibold flex flex-col gap-3">
-          <div className="flex items-center justify-between  gap-2">
-            <div className="flex items-center gap-2">
-              <Swap size={22} />
-              Reverse cards
-            </div>
-            <ToggleSwitch
-              isChecked={fields.isReversed}
-              handleToggle={() =>
-                setFields({ ...fields, isReversed: !fields.isReversed })
-              }
-            />
-          </div>
-
           <div className="flex gap-2 justify-between items-center">
             <div className="flex items-center gap-2">
               <TextAa size={22} />

@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../contexts/auth";
 
 interface FetchApiResult<T> {
-  items: T[];
+  items: T | null;
   refetch: () => void;
 }
 
 export const useFetchGet = <T>(endpoint: string): FetchApiResult<T> => {
   const { auth, updateAuth } = useAuth();
-  const [items, setItems] = useState<T[]>([]);
+  const [items, setItems] = useState<T | null>(null);
 
   const url = new URL(endpoint, import.meta.env.APP_API_URL);
 
@@ -53,8 +53,10 @@ export const useFetchGet = <T>(endpoint: string): FetchApiResult<T> => {
         return useFetchGet(endpoint);
       }
 
-      const data = await response.json();
-      setItems(data);
+      const data: T = await response.json();
+      if (data) {
+        setItems(data);
+      }
     } catch (err) {
       console.log(err);
     }
