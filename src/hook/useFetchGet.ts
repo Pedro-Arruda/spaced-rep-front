@@ -40,6 +40,7 @@ export const useFetchGet = <T>(endpoint: string): FetchApiResult<T> => {
 
         if (refreshResponse.status == 401) {
           updateAuth(null);
+          return;
         }
 
         const refreshTokenData = await refreshResponse.json();
