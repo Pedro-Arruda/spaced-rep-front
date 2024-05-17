@@ -25,7 +25,7 @@ export const Study = () => {
   const [cardSide, setCardSide] = useState<"front" | "back">("front");
   const [dinamicExamples, setDinamicExamples] = useState<string[]>([]);
   const { items: levelsDifficult } =
-    useFetchGet<ILevelsDifficult>("/levels-difficulty");
+    useFetchGet<ILevelsDifficult[]>("/levels-difficulty");
 
   const handleClick = (studyAt: number, level: number) => {
     const url = `/cards/${currentCard["card_id"]}`;
@@ -149,15 +149,16 @@ export const Study = () => {
               </div>
             </div>
 
-            {cardSide === "front" ? (
-              <ShowAnswerButton setCardSide={handleShowAnswer} />
-            ) : (
-              <DifficultButtons
-                handleClick={handleClick}
-                levelsDifficult={levelsDifficult}
-                currentCard={currentCard}
-              />
-            )}
+            {levelsDifficult &&
+              (cardSide === "front" ? (
+                <ShowAnswerButton setCardSide={handleShowAnswer} />
+              ) : (
+                <DifficultButtons
+                  handleClick={handleClick}
+                  levelsDifficult={levelsDifficult}
+                  currentCard={currentCard}
+                />
+              ))}
           </>
         )}
       </Container>

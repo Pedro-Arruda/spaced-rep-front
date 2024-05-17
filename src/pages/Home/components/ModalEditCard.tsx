@@ -4,7 +4,7 @@ import { Button } from "../../../components/Button";
 import { TextArea } from "../../../components/TextArea";
 import ToggleSwitch from "../../../components/Toggle";
 import { useFetchGet } from "../../../hook/useFetchGet";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 interface IModalAddCard {
   fields: any;
