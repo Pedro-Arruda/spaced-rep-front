@@ -9,6 +9,7 @@ import { successToast } from "../../components/Toast";
 import { useAuth } from "../../contexts/auth";
 import { useFetchGet } from "../../hook/useFetchGet";
 import { ModalEditCard } from "./components/ModalEditCard";
+import { ModalDeleteCard } from "./components/ModalDeleteCard";
 
 interface IFields {
   front: string;
@@ -23,6 +24,8 @@ export const Home = () => {
 
   const [isOpenAddModal, setIsOpenAddModal] = useState(false);
   const [isOpenEditModal, setIsOpenEditModal] = useState(false);
+  const [isOpenDeleteModal, setIsOpenDeleteModal] = useState(false);
+
   const [cardId, setCardId] = useState<ICard["card_id"]>();
 
   let { items: cards, refetch } = useFetchGet<ICard[]>("/cards");
@@ -77,13 +80,66 @@ export const Home = () => {
     refetch();
   };
 
+  const handleEditSubmit = async () => {
+    const formData = new FormData();
+    formData.append("front", fields.front);
+    formData.append("back", fields.back);
+    formData.append("user_id", String(auth?.user.user_id));
+    formData.append("dinamic_examples", String(fields.dinamic_examples));
+
+    if (fields.anexo && fields.anexo.length > 0)
+      formData.append("anexo", fields.anexo[0]);
+
+    await fetchApi(
+      `/cards/${cardId}`,
+      fields,
+      auth!,
+      updateAuth,
+      "PATCH",
+      "application/json"
+    );
+
+    setFields({
+      front: "",
+      back: "",
+      anexo: null,
+      isReversed: fields.isReversed,
+      dinamic_examples: fields.dinamic_examples,
+    });
+
+    successToast("Card edited successfully!");
+
+    refetch();
+  };
+
+  const handleDeleteSubmit = async () => {
+    const formData = new FormData();
+
+    if (fields.anexo && fields.anexo.length > 0)
+      formData.append("anexo", fields.anexo[0]);
+
+    const url = new URL(`/cards/${cardId}`, import.meta.env.APP_API_URL);
+
+    await fetch(url, {
+      method: "DELETE",
+      headers: {
+        authorization: `Bearer ${auth?.accessToken}`,
+      },
+    });
+    successToast("Card deleted successfully!");
+    setIsOpenDeleteModal(false);
+
+    refetch();
+  };
+
   const handleEdit = (cardId: ICard["card_id"]) => {
     setIsOpenEditModal(true);
     setCardId(cardId);
   };
 
   const handleDelete = (cardId: ICard["card_id"]) => {
-    console.log(cardId);
+    setIsOpenDeleteModal(true);
+    setCardId(cardId);
   };
 
   return (
@@ -101,9 +157,17 @@ export const Home = () => {
         <ModalEditCard
           fields={fields}
           setFields={setFields}
-          handleSubmit={handleSubmit}
+          handleSubmit={handleEditSubmit}
           setIsOpenModal={setIsOpenEditModal}
           cardId={cardId}
+        />
+      )}
+
+      {isOpenDeleteModal && (
+        <ModalDeleteCard
+          fields={fields}
+          handleDelete={handleDeleteSubmit}
+          setIsOpenModal={setIsOpenDeleteModal}
         />
       )}
 

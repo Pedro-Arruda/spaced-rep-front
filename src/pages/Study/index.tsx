@@ -8,22 +8,25 @@ import { DifficultButtons } from "./components/DifficultButtons";
 import { fetchApi } from "../../functions/fetchApi";
 import { AllCardsStudied } from "./components/AllCardsStudied";
 import { useLocation } from "react-router";
-import { getChatGPTResponse } from "../../functions/getChatGPTResponse";
 import { CurrentCard } from "./CurrentCard";
 import { handleSpeak } from "../../functions/handleSpeak";
 import { useAuth } from "../../contexts/auth";
+import { getAIResponse } from "../../functions/getAIResponse";
+import { BookLoader } from "react-awesome-loaders";
 
 export const Study = () => {
   const { auth, updateAuth } = useAuth();
   const { state } = useLocation();
   const [cardsToStudy, setCardsToStudy] = useState<any[]>(state.cardsToStudy);
+
   const [barPercent, setBarPercent] = useState(40);
+  const [isLoading, setIsLoading] = useState(false);
+
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [currentCard, setCurrentCard] = useState<any>(
     cardsToStudy[currentCardIndex]
   );
   const [cardSide, setCardSide] = useState<"front" | "back">("front");
-  const [dinamicExamples, setDinamicExamples] = useState<string[]>([]);
   const { items: levelsDifficult } =
     useFetchGet<ILevelsDifficult[]>("/levels-difficulty");
 
@@ -59,47 +62,47 @@ export const Study = () => {
   }, [currentCardIndex, cardsToStudy]);
 
   useEffect(() => {
-    const defaultPrompt =
-      "Make a sentence for each word received. Enumarate each sentence";
+    const defaultPrompt = `
+        Make a sentence for each word received, and also translate the sentence in the context in pt-br between (). 
+        Separate each sentence with a - and give only the sentence without the word itself`;
 
     const fetchData = async () => {
-      const reverseExamplesCards = cardsToStudy.filter(
+      const dinamicExamplesCards = cardsToStudy.filter(
         (card) => card.dinamic_examples
       );
-      if (reverseExamplesCards && reverseExamplesCards.length > 0) {
-        const words = reverseExamplesCards.map((card) => ` -${card.front}`);
+
+      const noDinamicExamplesCards = cardsToStudy.filter(
+        (card) => !card.dinamic_examples
+      );
+
+      if (dinamicExamplesCards && dinamicExamplesCards.length > 0) {
+        const words = dinamicExamplesCards.map((card) => ` -${card.front}`);
         const prompt = words.join("");
-        const response = await getChatGPTResponse([
-          { role: "user", content: defaultPrompt + prompt },
-        ]);
-        setDinamicExamples(
-          response
-            .split(/\d+\./)
-            .filter((example: string) => example.trim() !== "")
-        );
+
+        try {
+          setIsLoading(true);
+
+          const response: string = await getAIResponse(defaultPrompt + prompt);
+          const splitted = response.split("-");
+
+          for (let i = 0; i < dinamicExamplesCards.length; i++) {
+            const newCard = {
+              ...dinamicExamplesCards[i],
+              generate_example: splitted[i + 1],
+            };
+
+            dinamicExamplesCards.splice(i, 1, newCard);
+          }
+          setCardsToStudy([...dinamicExamplesCards, noDinamicExamplesCards]);
+        } catch (error) {
+          console.log(error);
+        } finally {
+          setIsLoading(false);
+        }
       }
     };
     fetchData();
   }, []);
-
-  useEffect(() => {
-    const reverseExamplesCards = cardsToStudy.filter(
-      (card) => card.dinamic_examples
-    );
-    const noReverseExamplesCards = cardsToStudy.filter(
-      (card) => !card.dinamic_examples
-    );
-    const cardsWithExamples: ICard[] = reverseExamplesCards.map(
-      (card, index) => ({
-        ...card,
-        ...(dinamicExamples &&
-          dinamicExamples.length > 0 && {
-            generate_example: dinamicExamples[index].replace("\n", "").trim(),
-          }),
-      })
-    );
-    setCardsToStudy([...cardsWithExamples, ...noReverseExamplesCards]);
-  }, [dinamicExamples]);
 
   if (currentCardIndex > cardsToStudy.length - 1) {
     return <AllCardsStudied />;
@@ -109,59 +112,71 @@ export const Study = () => {
     <>
       <Header />
 
-      <Container classname="flex flex-col justify-between h-[85vh]">
-        {cardsToStudy && cardsToStudy.length > 0 && (
-          <>
-            <div className="bg-container p-5 mt-6 flex justify-between items-center gap-5">
-              <p>Cards</p>
-              <div className="flex-1 relative h-5">
-                <div className="bg-neutral-600 absolute top-[2px] h-5 w-full rounded-md" />
+      {isLoading ? (
+        <div className="flex justify-center items-center mt-10">
+          <BookLoader
+            background={"linear-gradient(135deg, #5c2b66, #a14de1)"}
+            desktopSize={"100px"}
+            mobileSize={"80px"}
+            textColor={"#a3a3a3"}
+            text="Generating your dynamics examples..."
+          />
+        </div>
+      ) : (
+        <Container classname="flex flex-col justify-between h-[85vh]">
+          {cardsToStudy && cardsToStudy.length > 0 && (
+            <>
+              <div className="bg-container p-5 mt-6 flex justify-between items-center gap-5">
+                <p>Cards</p>
+                <div className="flex-1 relative h-5">
+                  <div className="bg-neutral-600 absolute top-[2px] h-5 w-full rounded-md" />
+                  <div
+                    className={`bg-green-500 absolute top-[2px] h-5  rounded-md wid-${barPercent}`}
+                  />
+                </div>
+                <p>
+                  {currentCardIndex} / {cardsToStudy.length}
+                </p>
+              </div>
+
+              <div className="flex-1 w-full mt-6">
                 <div
-                  className={`bg-green-500 absolute top-[2px] h-5  rounded-md wid-${barPercent}`}
-                />
+                  className={classNames(
+                    "relative h-full w-full flip-card flip-card-inner",
+                    cardSide === "back" && "rotate"
+                  )}
+                >
+                  {currentCard && (
+                    <>
+                      <CurrentCard
+                        card={currentCard}
+                        side="back"
+                        onClickSound={handleSpeak}
+                      />
+                      <CurrentCard
+                        card={currentCard}
+                        side="front"
+                        onClickSound={handleSpeak}
+                      />
+                    </>
+                  )}
+                </div>
               </div>
-              <p>
-                {currentCardIndex} / {cardsToStudy.length}
-              </p>
-            </div>
 
-            <div className="flex-1 w-full mt-6">
-              <div
-                className={classNames(
-                  "relative h-full w-full flip-card flip-card-inner",
-                  cardSide === "back" && "rotate"
-                )}
-              >
-                {currentCard && (
-                  <>
-                    <CurrentCard
-                      card={currentCard}
-                      side="back"
-                      onClickSound={handleSpeak}
-                    />
-                    <CurrentCard
-                      card={currentCard}
-                      side="front"
-                      onClickSound={handleSpeak}
-                    />
-                  </>
-                )}
-              </div>
-            </div>
-
-            {levelsDifficult &&
-              (cardSide === "front" ? (
-                <ShowAnswerButton setCardSide={handleShowAnswer} />
-              ) : (
-                <DifficultButtons
-                  handleClick={handleClick}
-                  levelsDifficult={levelsDifficult}
-                  currentCard={currentCard}
-                />
-              ))}
-          </>
-        )}
-      </Container>
+              {levelsDifficult &&
+                (cardSide === "front" ? (
+                  <ShowAnswerButton setCardSide={handleShowAnswer} />
+                ) : (
+                  <DifficultButtons
+                    handleClick={handleClick}
+                    levelsDifficult={levelsDifficult}
+                    currentCard={currentCard}
+                  />
+                ))}
+            </>
+          )}
+        </Container>
+      )}
     </>
   );
 };
