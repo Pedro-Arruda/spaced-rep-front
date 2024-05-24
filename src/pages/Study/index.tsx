@@ -16,15 +16,18 @@ import { getAIResponse } from "../../functions/getAIResponse";
 export const Study = () => {
   const { auth, updateAuth } = useAuth();
   const { state } = useLocation();
-  const [cardsToStudy, setCardsToStudy] = useState<any[]>(state.cardsToStudy);
+  const [cardsToStudy, setCardsToStudy] = useState<ICard[]>(
+    state.cardsToStudy || []
+  );
+
+  const [generatedExamples, setGeneratedExamples] = useState<
+    Record<string, string>
+  >({});
 
   const [barPercent, setBarPercent] = useState(40);
   const [isLoading, setIsLoading] = useState(false);
-
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
-  const [currentCard, setCurrentCard] = useState<any>(
-    cardsToStudy[currentCardIndex]
-  );
+  const [currentCard, setCurrentCard] = useState<any>(null);
   const [cardSide, setCardSide] = useState<"front" | "back">("front");
   const { items: levelsDifficult } =
     useFetchGet<ILevelsDifficult[]>("/levels-difficulty");
@@ -53,37 +56,38 @@ export const Study = () => {
     setCardSide("back");
   };
 
+  useEffect(() => {
+    if (cardsToStudy.length > 0) {
+      setBarPercent(Math.floor((currentCardIndex / cardsToStudy.length) * 100));
+      setCurrentCard(cardsToStudy[currentCardIndex]);
+    }
+  }, [currentCardIndex, cardsToStudy]);
+
   const fetchDynamicExamples = async () => {
     const defaultPrompt = `
-    Make a sentence for each word received, and also translate the sentence in the context in pt-br between (). 
-    Separate each sentence with a - and give only the sentence without the word itself`;
-    console.log("cardsToStudy inicio funcao", cardsToStudy);
+      Make a sentence for each word received, and also translate the sentence in the context in pt-br between (). 
+      Don't ennumarate, just separate each sentence with a - and a '\n' and give only the sentence without the word itself`;
 
     const dinamicExamplesCards = cardsToStudy.filter(
       (card) => card.dinamic_examples
     );
 
-    const noDinamicExamplesCards = cardsToStudy.filter(
-      (card) => !card.dinamic_examples
-    );
-
-    if (dinamicExamplesCards && dinamicExamplesCards.length > 0) {
+    if (dinamicExamplesCards.length > 0) {
       const words = dinamicExamplesCards.map((card) => ` -${card.front}`);
       const prompt = words.join("");
 
       try {
         setIsLoading(true);
-
         const response: string = await getAIResponse(defaultPrompt + prompt);
-        const splitted = response.split("-");
+        const splitted = response.split("- ");
+        console.log("response", response);
+        console.log("splitted", splitted);
 
         for (let i = 0; i < dinamicExamplesCards.length; i++) {
-          const newCard = {
-            ...dinamicExamplesCards[i],
-            generate_example: splitted[i + 1],
-          };
+          const front = dinamicExamplesCards[i].front;
+          const example = splitted[i + 1];
 
-          dinamicExamplesCards.splice(i, 1, newCard);
+          generatedExamples[front] = example;
         }
       } catch (error) {
         console.log(error);
@@ -92,20 +96,15 @@ export const Study = () => {
       }
     }
 
-    setCardsToStudy([...dinamicExamplesCards, ...noDinamicExamplesCards]);
-    console.log("cardsToStudy na funcao", cardsToStudy);
+    // setCardsToStudy([...dinamicExamplesCards, ...noDinamicExamplesCards]);
   };
 
   useEffect(() => {
     fetchDynamicExamples();
+  }, []);
 
-    if (cardsToStudy) {
-      setBarPercent(Math.floor((currentCardIndex / cardsToStudy.length) * 100));
-    }
-    setCurrentCard(cardsToStudy[currentCardIndex]);
-  }, [state.cardsToStudy]);
-
-  if (currentCardIndex > cardsToStudy.length - 1) return <AllCardsStudied />;
+  if (cardsToStudy.length > 0 && currentCardIndex > cardsToStudy.length - 1)
+    return <AllCardsStudied />;
 
   return (
     <>
@@ -148,11 +147,13 @@ export const Study = () => {
                         card={currentCard}
                         side="back"
                         onClickSound={handleSpeak}
+                        generatedExamples={generatedExamples}
                       />
                       <CurrentCard
                         card={currentCard}
                         side="front"
                         onClickSound={handleSpeak}
+                        generatedExamples={generatedExamples}
                       />
                     </>
                   )}

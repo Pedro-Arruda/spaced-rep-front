@@ -1,13 +1,41 @@
 import classNames from "classnames";
 import { SpeakerHigh } from "phosphor-react";
+import { useState } from "react";
 
-interface ICurrentCard {
-  card: any;
-  side: "front" | "back";
-  onClickSound: (text: string) => void;
+interface ICardToShow extends ICard {
+  generate_example?: string;
 }
 
-export const CurrentCard = ({ card, side, onClickSound }: ICurrentCard) => {
+interface ICurrentCard {
+  card: ICardToShow;
+  side: "front" | "back";
+  onClickSound: (text: string) => void;
+  generatedExamples: Record<string, string>;
+}
+
+interface IGeneratedExample {
+  example: string;
+  translation: string;
+}
+
+export const CurrentCard = ({
+  card,
+  side,
+  onClickSound,
+  generatedExamples,
+}: ICurrentCard) => {
+  let example = "";
+  let translation = "";
+
+  if (card.dinamic_examples && card.front in generatedExamples) {
+    example = generatedExamples[card["front"]].split("(")[0];
+    translation = generatedExamples[card["front"]]
+      .split("(")[1]
+      .replace(")", "");
+  }
+
+  console.log(generatedExamples);
+
   return (
     <div
       className={classNames(
@@ -30,15 +58,10 @@ export const CurrentCard = ({ card, side, onClickSound }: ICurrentCard) => {
         </div>
       )}
 
-      {card.generate_example && side === "back" && (
+      {example && translation && side === "back" && (
         <div className="flex flex-col items-center h-4/5">
-          <p>{card.generate_example.split("(")[0].replaceAll("*", "")}</p>
-          <p className="text-neutral-400">
-            {card.generate_example
-              .split("(")[1]
-              .replace(")", "")
-              .replaceAll("*", "")}
-          </p>
+          <p>{example}</p>
+          <p className="text-neutral-400">{translation}</p>
         </div>
       )}
     </div>
