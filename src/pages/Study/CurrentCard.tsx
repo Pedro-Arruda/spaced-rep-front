@@ -8,8 +8,6 @@ interface ICurrentCard {
 }
 
 export const CurrentCard = ({ card, side, onClickSound }: ICurrentCard) => {
-  console.log(card);
-
   return (
     <div
       className={classNames(

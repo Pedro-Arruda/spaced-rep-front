@@ -3,36 +3,34 @@ import { Container } from "../../components/Container";
 import { Header } from "../../components/Header";
 import { ChatMessage } from "./components/ChatMessage";
 import { TalkingTopic } from "./components/TalkingTopic";
-import { getChatGPTResponse } from "../../functions/getChatGPTResponse";
 import { defaultTopics } from "../../utils/defaultIATopics";
 import { Translator } from "./components/Translator";
+import { startAIChat } from "../../functions/startAIChat";
 
 export const TalkWithIA = () => {
   const [messages, setMessages] = useState<IChatMessage[]>([]);
   const [inputUser, setInputUser] = useState<string>("");
 
   const handleClickTopic = async (IAPrompt: string) => {
-    setMessages([{ role: "system", content: "", isLoading: true }]);
+    setMessages([{ role: "system", parts: "", isLoading: true }]);
 
-    const response = await getChatGPTResponse([
-      { role: "user", content: IAPrompt },
-    ]);
+    const response = await startAIChat(messages, IAPrompt);
 
     messages.pop();
 
-    setMessages([{ role: "system", content: response }]);
+    setMessages([{ role: "system", parts: response }]);
   };
 
   const handleOnKeyUp = async (key: string, content: string) => {
     if (key === "Enter") {
-      messages.push({ role: "user", content });
+      messages.push({ role: "user", parts: content });
       setInputUser("");
 
-      messages.push({ role: "system", isLoading: true, content: "" });
-      const response = await getChatGPTResponse(messages);
+      messages.push({ role: "system", isLoading: true, parts: "" });
+      const response = await startAIChat(messages, content);
       messages.pop();
 
-      setMessages([...messages, { role: "system", content: response }]);
+      setMessages([...messages, { role: "system", parts: response }]);
     }
   };
 
@@ -41,8 +39,9 @@ export const TalkWithIA = () => {
       <Header />
       <Container classname="flex flex-col justify-between h-[85vh]">
         <div className="my-6 md:flex flex-wrap gap-5 text-lg hidden">
-          {defaultTopics.map((topic) => (
+          {defaultTopics.map((topic, i) => (
             <TalkingTopic
+              key={i}
               topic={topic}
               handleClickTopic={(prompt) => handleClickTopic(prompt)}
             />
@@ -51,10 +50,10 @@ export const TalkWithIA = () => {
 
         <div className="flex-1 flex relative justify-between gap-10  mt-3 py-3 overflow-y-auto">
           <div className="flex flex-col gap-5">
-            {messages.map(({ content, role, isLoading }, i) => (
+            {messages.map(({ parts, role, isLoading }, i) => (
               <ChatMessage
                 role={role}
-                content={content}
+                parts={parts}
                 key={i}
                 isLoading={isLoading}
               />

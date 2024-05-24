@@ -1,5 +1,5 @@
 interface IChatMessage {
-  content: string;
+  parts: string;
   role: "system" | "user";
   isLoading?: boolean;
 }
