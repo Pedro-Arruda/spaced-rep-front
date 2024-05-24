@@ -12,7 +12,6 @@ import { CurrentCard } from "./CurrentCard";
 import { handleSpeak } from "../../functions/handleSpeak";
 import { useAuth } from "../../contexts/auth";
 import { getAIResponse } from "../../functions/getAIResponse";
-import { BookLoader } from "react-awesome-loaders";
 
 export const Study = () => {
   const { auth, updateAuth } = useAuth();
@@ -113,14 +112,11 @@ export const Study = () => {
       <Header />
 
       {isLoading ? (
-        <div className="flex justify-center items-center mt-10">
-          <BookLoader
-            background={"linear-gradient(135deg, #5c2b66, #a14de1)"}
-            desktopSize={"100px"}
-            mobileSize={"80px"}
-            textColor={"#a3a3a3"}
-            text="Generating your dynamics examples..."
-          />
+        <div className="flex items-center mt-10 flex-col gap-4">
+          <div className="loader " />
+          <p className="font-semibold text-xl">
+            Generating your dynamic examples...
+          </p>
         </div>
       ) : (
         <Container classname="flex flex-col justify-between h-[85vh]">
