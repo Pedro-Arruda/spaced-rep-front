@@ -53,57 +53,57 @@ export const Study = () => {
     setCardSide("back");
   };
 
-  useEffect(() => {
+  const fetchDynamicExamples = async () => {
     const defaultPrompt = `
-        Make a sentence for each word received, and also translate the sentence in the context in pt-br between (). 
-        Separate each sentence with a - and give only the sentence without the word itself`;
+    Make a sentence for each word received, and also translate the sentence in the context in pt-br between (). 
+    Separate each sentence with a - and give only the sentence without the word itself`;
+    console.log("cardsToStudy inicio funcao", cardsToStudy);
 
-    const fetchData = async () => {
-      const dinamicExamplesCards = cardsToStudy.filter(
-        (card) => card.dinamic_examples
-      );
+    const dinamicExamplesCards = cardsToStudy.filter(
+      (card) => card.dinamic_examples
+    );
 
-      const noDinamicExamplesCards = cardsToStudy.filter(
-        (card) => !card.dinamic_examples
-      );
+    const noDinamicExamplesCards = cardsToStudy.filter(
+      (card) => !card.dinamic_examples
+    );
 
-      if (dinamicExamplesCards && dinamicExamplesCards.length > 0) {
-        const words = dinamicExamplesCards.map((card) => ` -${card.front}`);
-        const prompt = words.join("");
+    if (dinamicExamplesCards && dinamicExamplesCards.length > 0) {
+      const words = dinamicExamplesCards.map((card) => ` -${card.front}`);
+      const prompt = words.join("");
 
-        try {
-          setIsLoading(true);
+      try {
+        setIsLoading(true);
 
-          const response: string = await getAIResponse(defaultPrompt + prompt);
-          const splitted = response.split("-");
+        const response: string = await getAIResponse(defaultPrompt + prompt);
+        const splitted = response.split("-");
 
-          for (let i = 0; i < dinamicExamplesCards.length; i++) {
-            const newCard = {
-              ...dinamicExamplesCards[i],
-              generate_example: splitted[i + 1],
-            };
+        for (let i = 0; i < dinamicExamplesCards.length; i++) {
+          const newCard = {
+            ...dinamicExamplesCards[i],
+            generate_example: splitted[i + 1],
+          };
 
-            dinamicExamplesCards.splice(i, 1, newCard);
-          }
-
-          setCardsToStudy([...dinamicExamplesCards, noDinamicExamplesCards]);
-          console.log("cardsToStudy dentro useEffect", cardsToStudy);
-        } catch (error) {
-          console.log(error);
-        } finally {
-          setIsLoading(false);
+          dinamicExamplesCards.splice(i, 1, newCard);
         }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoading(false);
       }
-    };
-    fetchData();
-  }, []);
+    }
+
+    setCardsToStudy([...dinamicExamplesCards, ...noDinamicExamplesCards]);
+    console.log("cardsToStudy na funcao", cardsToStudy);
+  };
 
   useEffect(() => {
+    fetchDynamicExamples();
+
     if (cardsToStudy) {
       setBarPercent(Math.floor((currentCardIndex / cardsToStudy.length) * 100));
     }
     setCurrentCard(cardsToStudy[currentCardIndex]);
-  }, [currentCardIndex, cardsToStudy]);
+  }, [state.cardsToStudy]);
 
   if (currentCardIndex > cardsToStudy.length - 1) return <AllCardsStudied />;
 
