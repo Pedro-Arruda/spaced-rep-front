@@ -34,7 +34,10 @@ export const CurrentCard = ({ card, side, onClickSound }: ICurrentCard) => {
         <div className="flex flex-col items-center h-4/5">
           <p>{card.generate_example.split("(")[0]}</p>
           <p className="text-neutral-400">
-            {card.generate_example.split("(")[1].replace(")", "")}
+            {card.generate_example
+              .split("(")[1]
+              .replace(")", "")
+              .replaceAll("*", "")}
           </p>
         </div>
       )}
