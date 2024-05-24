@@ -32,7 +32,7 @@ export const CurrentCard = ({ card, side, onClickSound }: ICurrentCard) => {
 
       {card.generate_example && side === "back" && (
         <div className="flex flex-col items-center h-4/5">
-          <p>{card.generate_example.split("(")[0]}</p>
+          <p>{card.generate_example.split("(")[0].replaceAll("*", "")}</p>
           <p className="text-neutral-400">
             {card.generate_example
               .split("(")[1]

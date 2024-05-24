@@ -54,13 +54,6 @@ export const Study = () => {
   };
 
   useEffect(() => {
-    if (cardsToStudy) {
-      setBarPercent(Math.floor((currentCardIndex / cardsToStudy.length) * 100));
-    }
-    setCurrentCard(cardsToStudy[currentCardIndex]);
-  }, [currentCardIndex, cardsToStudy]);
-
-  useEffect(() => {
     const defaultPrompt = `
         Make a sentence for each word received, and also translate the sentence in the context in pt-br between (). 
         Separate each sentence with a - and give only the sentence without the word itself`;
@@ -92,7 +85,9 @@ export const Study = () => {
 
             dinamicExamplesCards.splice(i, 1, newCard);
           }
+
           setCardsToStudy([...dinamicExamplesCards, noDinamicExamplesCards]);
+          console.log("cardsToStudy dentro useEffect", cardsToStudy);
         } catch (error) {
           console.log(error);
         } finally {
@@ -103,9 +98,14 @@ export const Study = () => {
     fetchData();
   }, []);
 
-  if (currentCardIndex > cardsToStudy.length - 1) {
-    return <AllCardsStudied />;
-  }
+  useEffect(() => {
+    if (cardsToStudy) {
+      setBarPercent(Math.floor((currentCardIndex / cardsToStudy.length) * 100));
+    }
+    setCurrentCard(cardsToStudy[currentCardIndex]);
+  }, [currentCardIndex, cardsToStudy]);
+
+  if (currentCardIndex > cardsToStudy.length - 1) return <AllCardsStudied />;
 
   return (
     <>
