@@ -16,13 +16,9 @@ import { getAIResponse } from "../../functions/getAIResponse";
 export const Study = () => {
   const { auth, updateAuth } = useAuth();
   const { state } = useLocation();
-  const [cardsToStudy, setCardsToStudy] = useState<ICard[]>(
-    state.cardsToStudy || []
-  );
+  const [cardsToStudy] = useState<ICard[]>(state.cardsToStudy || []);
 
-  const [generatedExamples, setGeneratedExamples] = useState<
-    Record<string, string>
-  >({});
+  const [generatedExamples] = useState<Record<string, string>>({});
 
   const [barPercent, setBarPercent] = useState(40);
   const [isLoading, setIsLoading] = useState(false);

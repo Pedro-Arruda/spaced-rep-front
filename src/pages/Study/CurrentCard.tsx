@@ -1,6 +1,5 @@
 import classNames from "classnames";
 import { SpeakerHigh } from "phosphor-react";
-import { useState } from "react";
 
 interface ICardToShow extends ICard {
   generate_example?: string;
@@ -11,11 +10,6 @@ interface ICurrentCard {
   side: "front" | "back";
   onClickSound: (text: string) => void;
   generatedExamples: Record<string, string>;
-}
-
-interface IGeneratedExample {
-  example: string;
-  translation: string;
 }
 
 export const CurrentCard = ({
