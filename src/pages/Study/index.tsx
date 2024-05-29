@@ -25,8 +25,6 @@ export const Study = () => {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [currentCard, setCurrentCard] = useState<any>(null);
   const [cardSide, setCardSide] = useState<"front" | "back">("front");
-  const { items: levelsDifficult } =
-    useFetchGet<ILevelsDifficult[]>("/levels-difficulty");
 
   const handleClick = (studyAt: number, level: number) => {
     const url = `/cards/${currentCard["card_id"]}`;
@@ -76,8 +74,6 @@ export const Study = () => {
         setIsLoading(true);
         const response: string = await getAIResponse(defaultPrompt + prompt);
         const splitted = response.split("- ");
-        console.log("response", response);
-        console.log("splitted", splitted);
 
         for (let i = 0; i < dinamicExamplesCards.length; i++) {
           const front = dinamicExamplesCards[i].front;
@@ -98,6 +94,9 @@ export const Study = () => {
   useEffect(() => {
     fetchDynamicExamples();
   }, []);
+
+  const { items: levelsDifficult } =
+    useFetchGet<ILevelsDifficult[]>("/levels-difficulty");
 
   if (cardsToStudy.length > 0 && currentCardIndex > cardsToStudy.length - 1)
     return <AllCardsStudied />;
