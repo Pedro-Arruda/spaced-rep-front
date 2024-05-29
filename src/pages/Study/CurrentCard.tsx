@@ -28,8 +28,6 @@ export const CurrentCard = ({
       .replace(")", "");
   }
 
-  console.log(generatedExamples);
-
   return (
     <div
       className={classNames(
