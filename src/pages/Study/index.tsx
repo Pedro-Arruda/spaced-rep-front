@@ -87,8 +87,6 @@ export const Study = () => {
         setIsLoading(false);
       }
     }
-
-    // setCardsToStudy([...dinamicExamplesCards, ...noDinamicExamplesCards]);
   };
 
   useEffect(() => {

@@ -33,14 +33,15 @@ export const DifficultButtons = ({
   return (
     <div className="bg-container py-4 px-5 mt-6 w-full lg:w-2/4 mx-auto flex lg:justify-between flex-wrap gap-3">
       <button
-        className="px-11 text-base py-1 w-full lg:w-max rounded-md bg-red-500"
+        className="px-11 text-xs sm:text-base py-1 w-full lg:w-max rounded-md bg-red-500"
         onClick={() => handleClick(convertTimeToMilisseconds("1m"), 0)}
       >
         <p>Again</p>
         <p>1m</p>
       </button>
+
       <button
-        className="px-11 text-base py-2 w-full lg:w-max rounded-md bg-orange-500"
+        className="px-11 text-xs sm:text-base py-2 w-full lg:w-max rounded-md bg-orange-500"
         onClick={() =>
           handleClick(
             convertTimeToMilisseconds(currentDifficults?.hard || "0"),
@@ -51,8 +52,9 @@ export const DifficultButtons = ({
         <p>Hard</p>
         <p>{currentDifficults?.hard || "5m"}</p>
       </button>
+
       <button
-        className="px-11 text-base py-2 w-full lg:w-max rounded-md bg-blue-500"
+        className="px-11 text-xs sm:text-base py-2 w-full lg:w-max rounded-md bg-blue-500"
         onClick={() =>
           handleClick(
             convertTimeToMilisseconds(currentDifficults?.regular || "0"),
@@ -63,8 +65,9 @@ export const DifficultButtons = ({
         <p>Regular</p>
         <p>{currentDifficults?.regular || "30m"}</p>
       </button>
+
       <button
-        className="px-11 text-base py-2 w-full lg:w-max rounded-md bg-green-500"
+        className="px-11 text-xs sm:text-base py-2 w-full lg:w-max rounded-md bg-green-500"
         onClick={() =>
           handleClick(
             convertTimeToMilisseconds(currentDifficults?.easy || "0"),

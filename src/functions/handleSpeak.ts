@@ -16,9 +16,7 @@ export const handleSpeak = (text: string) => {
       utterance.rate = 0.8;
 
       speechSynthesis.speak(utterance);
-    } else {
-      errorToast("Your browser doesn't support English voices");
-    }
+    } else errorToast("An error occurred, try again");
   } else {
     errorToast("Error: SpeechSynthesis API is not supported");
   }
