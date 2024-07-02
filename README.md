@@ -1,9 +1,10 @@
 <br>
 
-<div  style='display: flex; justify-content: center'>
-    <img src="logo-spacedrep.png" alt="Exemplo imagem" height='80px'>
+<div align='center'>
+<img src="logo-spacedrep.png" alt="Exemplo imagem" height='80px' >
 </div>
-<h3 align="center">
+
+<h3 align="center" style='margin-bottom: 32px'>
  App utilizing React and Node.js/Express to facilitate spaced repetition learning with cards.
 </h3>
 
